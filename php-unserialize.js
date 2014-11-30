@@ -145,7 +145,6 @@ function unserialize (data) {
           chrs = keyandchrs[0];
           keys = keyandchrs[1];
           dataoffset += chrs + 2;
-
           for (i = 0; i < parseInt(keys, 10); i++) {
             kprops = _unserialize(data, dataoffset);
             kchrs = kprops[1];
@@ -161,6 +160,38 @@ function unserialize (data) {
           }
 
           dataoffset += 1;
+          break;
+        case 'o':
+          readdata = {};
+          ccount = read_until(data, dataoffset, ':');
+          chrs = ccount[0];
+          stringlength = ccount[1];
+          dataoffset += chrs + 2;
+
+          readData = read_chrs(data, dataoffset + 1, parseInt(stringlength, 10));
+          chrs = readData[0];
+          readdata._type = readData[1];
+          dataoffset += chrs + 2;
+
+          keyandchrs = read_until(data, dataoffset, ':');
+          chrs = keyandchrs[0];
+          keys = keyandchrs[1];
+          dataoffset += chrs + 2;
+          for (i = 0; i < parseInt(keys, 10); i++) {
+            kprops = _unserialize(data, dataoffset);
+            kchrs = kprops[1];
+            key = kprops[2];
+            dataoffset += kchrs;
+
+            vprops = _unserialize(data, dataoffset);
+            vchrs = vprops[1];
+            value = vprops[2];
+            dataoffset += vchrs;
+
+            readdata[key] = value;
+          }
+          dataoffset += 1;
+
           break;
         default:
           error('SyntaxError', 'Unknown / Unhandled data type(s): ' + dtype);

@@ -77,6 +77,13 @@ function unserialize (data) {
       }
       return [buf.length, buf.join('')];
     },
+    convert_to_simple_array = function(data){
+            var tmpArr = [];
+              for (var idx in data){
+                tmpArr[parseInt(idx)] = data[idx];
+              }
+            return tmpArr;
+    },
     _unserialize = function (data, offset) {
       var dtype, dataoffset, keyandchrs, keys,
         readdata, readData, ccount, stringlength,
@@ -145,12 +152,15 @@ function unserialize (data) {
           chrs = keyandchrs[0];
           keys = keyandchrs[1];
           dataoffset += chrs + 2;
+          var simpleArray = true;
           for (i = 0; i < parseInt(keys, 10); i++) {
             kprops = _unserialize(data, dataoffset);
             kchrs = kprops[1];
             key = kprops[2];
             dataoffset += kchrs;
-
+            if (kprops[0] != 'i'){
+              simpleArray = false;
+            }
             vprops = _unserialize(data, dataoffset);
             vchrs = vprops[1];
             value = vprops[2];
@@ -158,6 +168,9 @@ function unserialize (data) {
 
             readdata[key] = value;
           }
+            if (simpleArray){
+              readdata = convert_to_simple_array(readdata);
+            }
 
           dataoffset += 1;
           break;
@@ -167,7 +180,6 @@ function unserialize (data) {
           chrs = ccount[0];
           stringlength = ccount[1];
           dataoffset += chrs + 2;
-
           readData = read_chrs(data, dataoffset + 1, parseInt(stringlength, 10));
           chrs = readData[0];
           readdata._type = readData[1];

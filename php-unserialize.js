@@ -38,6 +38,8 @@ function unserialize (data) {
   // *       returns 1: ['Kevin', 'van', 'Zonneveld']
   // *       example 2: unserialize('a:3:{s:9:"firstName";s:5:"Kevin";s:7:"midName";s:3:"van";s:7:"surName";s:9:"Zonneveld";}');
   // *       returns 2: {firstName: 'Kevin', midName: 'van', surName: 'Zonneveld'}
+  // *      improved by: Eliot Dahood
+  // *           object support added
   var that = this,
     utf8Overhead = function (chr) {
       // http://phpjs.org/functions/unserialize:571#comment_95906
